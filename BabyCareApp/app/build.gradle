@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+apply from : '../kotlin.gradle'
+
+android {
+
+    def globalConfig = rootProject.ext.android
+
+    compileSdkVersion globalConfig["compileSdkVersion"]
+    buildToolsVersion globalConfig["buildToolsVersion"]
+    defaultConfig {
+        applicationId "com.bingo.babycare"
+        minSdkVersion globalConfig["minSdkVersion"]
+        targetSdkVersion globalConfig["targetSdkVersion"]
+        versionCode globalConfig["versionCode"]
+        versionName globalConfig["versionName"]
+
+        testInstrumentationRunner globalConfig["testInstrumentationRunner"]
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+
+    compileOptions {
+        targetCompatibility globalConfig["javaVersion"]
+        sourceCompatibility globalConfig["javaVersion"]
+    }
+}
+
+dependencies {
+    def dependencies = rootProject.ext.dependencies
+    def debugDependencies = rootProject.ext.debugDependencies
+    def testDependencies = rootProject.ext.testDependencies
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation(testDependencies.espresso, {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testImplementation testDependencies.junit
+
+    implementation project(':common')
+
+    // glide
+    kapt dependencies.glide_compiler
+
+    // room
+    kapt dependencies.room_compiler
+
+    // leakcanary
+    debugImplementation debugDependencies.leakcanary
+    releaseImplementation dependencies.leakcanary
+
+    // dagger2
+    kapt dependencies.dagger2_compiler
+    kapt dependencies.dagger2_android_processor
+
+    // butterknife
+    kapt dependencies.butterknife_compiler
+
+    // room test
+    testImplementation testDependencies.room_testing
+}

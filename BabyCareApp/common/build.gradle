@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+apply from : '../kotlin.gradle'
+
+android {
+
+    def globalConfig = rootProject.ext.android
+    compileSdkVersion globalConfig["compileSdkVersion"]
+
+    defaultConfig {
+        minSdkVersion globalConfig["minSdkVersion"]
+        targetSdkVersion globalConfig["targetSdkVersion"]
+        versionCode globalConfig["versionCode"]
+        versionName globalConfig["versionName"]
+
+        testInstrumentationRunner globalConfig["testInstrumentationRunner"]
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        targetCompatibility globalConfig["javaVersion"]
+        sourceCompatibility globalConfig["javaVersion"]
+    }
+
+}
+
+dependencies {
+    def dependencies = rootProject.ext.dependencies
+    def testDependencies = rootProject.ext.testDependencies
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation testDependencies.junit
+
+    api dependencies.bingo_fw
+}
